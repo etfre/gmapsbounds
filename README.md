@@ -12,7 +12,11 @@ pip install gmapsbounds
 The program currently requires installation of Python's Selenium bindings as well as the Firefox web browser. Installing with pip should take care of the Selenium requirement.
 <h2>Usage</h2>
 ```
-./gmapsbounds my_city_list.txt -o city/json/path
+./gmapsbounds my_city_list.txt -o path/to/kml/dir
+```
+The program output can also go into a single KML file by passing a file name ending in '.kml' to the `-o` arg:
+```
+./gmapsbounds my_city_list.txt -o boundaries.kml
 ```
 <h2>To Do</h2>
 * Better pixel color detection around city names
