@@ -50,8 +50,7 @@ class Location:
         # shutil.copyfile(os.path.join(self.save_dir, filename), filename)
 
     def calculate_coordinates(self):
-        boundaries_filename = os.path.join(self.save_dir, 'boundaries.png')
-        rgb_im = utils.load_image(boundaries_filename)
+        rgb_im = utils.load_image(os.path.join(self.save_dir, 'boundaries.png'))
         nodes = reader.get_nodes(rgb_im)
         self.polygons = reader.get_polygons(nodes, rgb_im)
         self.polygons = reader.prune_nodes(self.polygons)

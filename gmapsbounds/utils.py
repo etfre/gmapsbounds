@@ -136,7 +136,7 @@ def add_polygons_to_placemark(placemark, polygons):
         add_coordinates_to_boundary(boundary, poly.nodes)
         if poly.inner is not None:
             boundary = ET.SubElement(polygon, 'innerBoundaryIs')
-            add_coordinates_to_boundary(boundary, poly.nodes)
+            add_coordinates_to_boundary(boundary, poly.inner.nodes)
 
 def add_placemark(root, location):
     placemark = ET.SubElement(root, 'Placemark')

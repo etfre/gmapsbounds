@@ -72,6 +72,9 @@ def get_polygons(nodes, rgb_im):
         current = unvisited[0]
         current.visited = True
         closest, distance = get_closest_unvisited_node(current, nodes, rgb_im)
+        if distance is not None and distance > constants.MAX_NODE_DIFFERENCE:
+            unvisited = unvisited[1:]
+            continue
         while closest is not None:
             poly.nodes.append(current)
             current = closest
@@ -81,7 +84,9 @@ def get_polygons(nodes, rgb_im):
                 break
             i = -1
             while distance > constants.MAX_NODE_DIFFERENCE:
-                if current is poly.nodes[0] or i < -constants.MAX_NODE_BACKTRACK:
+                if (current is poly.nodes[0] or i < -constants.MAX_NODE_BACKTRACK
+                    or (utils.get_distance(poly.nodes[0], current) < constants.MAX_NODE_DIFFERENCE and
+                    len(poly.nodes) >= len(nodes) / 2)):
                     closest = None
                     break
                 current = poly.nodes[i]
@@ -105,29 +110,14 @@ def trim_overlapping_nodes(polygons):
                 if len(test_polygon.nodes) == starting_count:
                     exterior_polygon.inner = test_polygon
                 break
-            if exterior_polygon is exterior_polygons[-1] and len(exterior_nodes) > 2:
+            if (exterior_polygon is exterior_polygons[-1] and
+                len(exterior_nodes) > 2 and
+                utils.get_distance(exterior_nodes[0], exterior_nodes[-1]) <=
+                constants.MAX_NODE_DIFFERENCE):
                 test_polygon.nodes = exterior_nodes
                 exterior_polygons.append(test_polygon)
                 break
     return exterior_polygons
-
-
-def remove_overlapping_polygons(polygons):
-    assert polygons
-    polygons = utils.sort_by_polygon_length(polygons)
-    polygons.reverse()
-    okay_polygons = [polygons[0]]
-    for test_polygon in polygons:
-        overlap = False
-        if test_polygon in okay_polygons:
-            continue
-        for okay_polygon in okay_polygons:
-            if test_polygon.overlaps(okay_polygon):
-                overlap = True
-                break
-        if not overlap:
-            okay_polygons.append(test_polygon)
-    return okay_polygons
 
 def get_closest_unvisited_node(current, nodes, rgb_im):
     closest_node = None
@@ -137,12 +127,9 @@ def get_closest_unvisited_node(current, nodes, rgb_im):
     go_up = True
     go_down = True
     while (0 <= pos - i or len(nodes) > pos + i) and (go_up or go_down):
-        signs = []
-        if go_down:
-            signs.append(-1)
-        if go_up:
-            signs.append(1)
-        for sign in signs:
+        for sign in [-1, 1]:
+            if sign == -1 and not go_down or sign == 1 and not go_up:
+                continue
             index = pos + i*sign
             if not 0 <= index < len(nodes):
                 continue
