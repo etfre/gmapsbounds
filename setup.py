@@ -5,7 +5,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
 	name='gmapsbounds',
-	version='0.1.4',
+	version='0.1.5',
 	description='Extract Lat/Lng boundary points of geographical regions from Google Maps',
 	url='https://github.com/evfredericksen/gmapsbounds',
 	author='Evan Fredericksen',
