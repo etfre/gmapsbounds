@@ -10,15 +10,13 @@ CFK = [40.74366543152521, 81.48733086305042, 162.97466172610083, 325.94932345220
 
 
 def lat_lng_to_pixels(lat, lng, zoom):
-    """Given two floats and an int, return a 2-tuple of ints.
+    '''
+    Given two floats and an int, return a 2-tuple of ints.
 
     Note that the pixel coordinates are tied to the entire map, not to the map
     section currently in view.
-
-    """
-    lat = float(lat)
-    lng = float(lng)
-    zoom = int(zoom)
+    '''
+    lat, lng, zoom = float(lat), float(lng), int(zoom)
     cbk = CBK[zoom]
     x = int(round(cbk + (lng * CEK[zoom])))
     foo = math.sin(lat * math.pi / 180)
@@ -27,21 +25,19 @@ def lat_lng_to_pixels(lat, lng, zoom):
     elif foo > 0.9999:
         foo = 0.9999
     y = int(round(cbk + (0.5 * math.log((1+foo)/(1-foo)) * (-CFK[zoom]))))
-    return (x, y)
+    return x, y
 
 def pixels_to_lat_lng(x, y, zoom):
-    """Given three ints, return a 2-tuple of floats.
+    '''
+    Given three ints, return a 2-tuple of floats.
 
     Note that the pixel coordinates are tied to the entire map, not to the map
     section currently in view.
-
-    """
-    x = int(x)
-    y = int(y)
-    zoom = int(zoom)
+    '''
+    x, y, zoom = int(x), int(y), int(zoom)
     foo = CBK[zoom]
     lng = (x - foo) / CEK[zoom]
     bar = (y - foo) / -CFK[zoom]
     blam = 2 * math.atan(math.exp(bar)) - math.pi / 2
     lat = blam / (math.pi / 180)
-    return (lat, lng)
+    return lat, lng

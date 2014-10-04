@@ -26,3 +26,5 @@ MAX_BLUE_GREEN_DIFFERENCE = 20
 VALID = [[232, 151, 142], [237, 162, 155]]
 INVALID = [[215, 60, 48], [218, 97, 97], [179, 56, 44], [180, 56, 44]]
 # Highway signs (domestic), Hospitals, Highway signs (foreign), city names
+
+MINIMUM_PRUNING_SIZE = 15

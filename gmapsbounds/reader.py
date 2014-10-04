@@ -19,13 +19,18 @@ def get_nodes(rgb_image):
                 exclude_surrounding_nodes(x, y, do_not_check, rgb_image)
             if valid_color(r, g, b) and no_invalid_adjacent(x, y, rgb_image):
                 nodes.append(Node(x, y))
+    if not nodes:
+        raise RuntimeError('Could not detect a boundary around this location')
     nodes[0].visited = True
     return nodes
 
-def prune_nodes(nodes):
+def prune_extra_nodes(polygons):
     pruned_polygons = []
-    for poly in nodes:
-        assert len(poly.nodes) > 2
+    for poly in polygons:
+        if len(poly.nodes) < constants.MINIMUM_PRUNING_SIZE:
+            assert len(poly.nodes) > 2
+            pruned_polygons.append(poly)
+            continue
         pruned = polygon.Polygon(poly.nodes[:2])
         for node in poly.nodes[2:]:
             if (utils.get_slope(pruned.nodes[-2], pruned.nodes[-1]) == utils.get_slope(pruned.nodes[-2], node) or
@@ -97,7 +102,7 @@ def get_polygons(nodes, rgb_im):
         unvisited = [node for node in nodes if node.visited is False]
     return polygons
 
-def trim_overlapping_nodes(polygons):
+def prune_overlapping_nodes(polygons):
     assert polygons
     polygons = utils.sort_by_polygon_length(polygons)
     polygons.reverse()
@@ -109,8 +114,7 @@ def trim_overlapping_nodes(polygons):
             if not exterior_nodes:
                 if len(test_polygon.nodes) == starting_count:
                     exterior_polygon.inner = test_polygon
-                break
-            if (exterior_polygon is exterior_polygons[-1] and
+            elif (exterior_polygon is exterior_polygons[-1] and
                 len(exterior_nodes) > 2 and
                 utils.get_distance(exterior_nodes[0], exterior_nodes[-1]) <=
                 constants.MAX_NODE_DIFFERENCE):

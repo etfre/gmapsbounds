@@ -1,6 +1,10 @@
 from gmapsbounds import utils
 
 class Polygon:
+    '''
+    Represent a collection of points on a map denoting part or all of a
+    geographical region
+    '''
     def __init__(self, nodes=None):
         if nodes is None:
             nodes = []
@@ -8,6 +12,9 @@ class Polygon:
         self.inner = None
 
     def contains(self, point):
+        '''
+        Return whether or not a point lies within this polygon
+        '''
         assert len(self.nodes) > 2
         crossings = 0
         i = -len(self.nodes) + 1

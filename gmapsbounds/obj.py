@@ -1,6 +1,5 @@
 import os
 import time
-import tempfile
 import shutil
 import xml.etree.ElementTree as ET
 from selenium import webdriver
@@ -10,10 +9,10 @@ from gmapsbounds import constants
 from gmapsbounds import llpx
 
 class Location:
-    def __init__(self, driver, name):
+    def __init__(self, driver, name, save_dir):
         self.driver = driver
         self.name = name
-        self.save_dir = tempfile.mkdtemp()
+        self.save_dir = save_dir
         self.center = ''
         self.zoom = ''
         self.polygons = []
@@ -42,10 +41,12 @@ class Location:
             pass
 
     def take_map_screenshot(self, filename):
-        container = self.driver.find_element_by_class_name('widget-scale')
-        # clicking this closes the ad panel
-        container.click()
+        # this closes the ad panel
+        self.driver.find_element_by_class_name('widget-scale').click()
         time.sleep(1)
+        # usually one second is enough to close the panel. Sometimes on
+        # slower internet connections it isn't, and we just aren't able
+        # to use that portion of the screenshot
         self.driver.save_screenshot(os.path.join(self.save_dir, filename))
         # shutil.copyfile(os.path.join(self.save_dir, filename), filename)
 
@@ -53,8 +54,8 @@ class Location:
         rgb_im = utils.load_image(os.path.join(self.save_dir, 'boundaries.png'))
         nodes = reader.get_nodes(rgb_im)
         self.polygons = reader.get_polygons(nodes, rgb_im)
-        self.polygons = reader.prune_nodes(self.polygons)
-        self.polygons = reader.trim_overlapping_nodes(self.polygons)
+        self.polygons = reader.prune_extra_nodes(self.polygons)
+        self.polygons = reader.prune_overlapping_nodes(self.polygons)
         self.pixcenter = [rgb_im.size[0] // 2, rgb_im.size[1] // 2]
         self.attach_nodes()
 

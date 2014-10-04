@@ -3,6 +3,7 @@
 import os
 import argparse
 import shutil
+import tempfile
 from gmapsbounds import obj
 from gmapsbounds import utils
 
@@ -13,29 +14,32 @@ def main():
         help="Location of program output. Specifies a file name if ends with .kml, otherwise"
         " specifies a directory", default=os.getcwd())
     args = parser.parse_args()
-    with open(args.input_filename) as f:
-        location_list = f.readlines()
-    if location_list:
-        location_objects = []
-        driver = utils.launch_driver()
-        try:
-            for location_name in location_list:
-                location_name = location_name.rstrip('\n')
-                location = obj.Location(driver, location_name)
+    location_objects = []
+    file_empty = True
+    save_dir = tempfile.mkdtemp()
+    try:
+        with open(args.input_filename) as f:
+            for location_name in f:
+                if file_empty and location_name:
+                    driver = utils.launch_driver()
+                    file_empty = False
+                location = obj.Location(driver, location_name.rstrip('\n'), save_dir)
                 try:
                     location.download_center_map()
                     location.calculate_coordinates()
                     location_objects.append(location)
                 finally:
-                    if os.path.exists(location.save_dir):
-                        shutil.rmtree(location.save_dir)
+                    os.remove(os.path.join(save_dir, 'boundaries.png'))
             if not args.output_loc.endswith('.kml'):
                 try:
                     os.makedirs(args.output_loc)
                 except FileExistsError:
                     pass
+    finally:
+        if os.path.exists(save_dir):
+            shutil.rmtree(save_dir)
+        if not file_empty:
             utils.write_to_kml(location_objects, args.output_loc)
-        finally:
             driver.close()
 
 if __name__ == '__main__':

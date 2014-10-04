@@ -26,13 +26,6 @@ def launch_driver(url=''):
         driver.get(url)
     return driver
 
-def wait_until(func, arg, interval=1):
-    while True:
-        try:
-            return func(arg)
-        except:
-            time.sleep(interval)
-
 def ray_crosses_edge(point, v1, v2):
     '''
     Test whether a point lies within a polygon, excluding vertices and edges
@@ -43,13 +36,6 @@ def ray_crosses_edge(point, v1, v2):
         point.y < min(v1.y, v2.y) or (v1.x == point.x and v1.x <= v2.x)):
         return False
     return not (point.y <= v2.y - (v2.x - point.x) * get_slope(v1, v2))
-
-def max_length_list(alist):
-    max_list = None
-    for sublist in alist:
-        if max_list is None or len(sublist) > len(max_list):
-            max_list = sublist
-    return max_list
 
 def get_water_multiplier(node1, node2, rgb_image):
     '''
