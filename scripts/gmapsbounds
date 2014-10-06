@@ -20,16 +20,18 @@ def main():
     try:
         with open(args.input_filename) as f:
             for location_name in f:
-                if file_empty and location_name:
-                    driver = utils.launch_driver()
-                    file_empty = False
-                location = obj.Location(driver, location_name.rstrip('\n'), save_dir)
-                try:
-                    location.download_center_map()
-                    location.calculate_coordinates()
-                    location_objects.append(location)
-                finally:
-                    os.remove(os.path.join(save_dir, 'boundaries.png'))
+                if location_name != '\n':
+                    if file_empty:
+                        driver = utils.launch_driver()
+                        file_empty = False
+                    location = obj.Location(driver, location_name.rstrip('\n'), save_dir)
+                    try:
+                        location.download_center_map()
+                        location.calculate_coordinates()
+                        location_objects.append(location)
+                    finally:
+                        if os.path.isfile(os.path.join(save_dir, 'boundaries.png')):
+                            os.remove(os.path.join(save_dir, 'boundaries.png'))
             if not args.output_loc.endswith('.kml'):
                 try:
                     os.makedirs(args.output_loc)

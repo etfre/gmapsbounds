@@ -4,6 +4,7 @@ import time
 from PIL import Image
 import xml.etree.ElementTree as ET
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from gmapsbounds import constants
 
 def load_image(filename):
@@ -22,6 +23,10 @@ def parse_url(url):
 def launch_driver(url=''):
     driver = webdriver.Firefox()
     driver.maximize_window()
+    # dcap = dict(DesiredCapabilities.PHANTOMJS)
+    # dcap["phantomjs.page.settings.userAgent"] = constants.USER_AGENT
+    # driver = webdriver.PhantomJS(desired_capabilities=dcap)
+    # driver.set_window_size(1920, 1080)
     if url:
         driver.get(url)
     return driver
