@@ -147,3 +147,16 @@ def write_to_kml(location_list, filename):
             add_placemark(root, location)
             with open('{}.kml'.format(os.path.join(filename, location.name)), 'w') as f:
                 f.write(ET.tostring(root).decode('utf8'))
+
+def same_line(start, end, test_node):
+	'''
+	Return whether test_node is approximately along the same line as
+	start and end nodes
+	'''
+	distance_ratio = get_distance(start, test_node) / get_distance(start, end)
+	xy_diffs = [end.x - start.x, end.y - start.y]
+	expected_xy = [start.x + distance_ratio * xy_diffs[0], start.y + distance_ratio * xy_diffs[1]]
+	if max(abs(expected_xy[0] - test_node.x), abs(expected_xy[1] - test_node.y)) >= 2:
+		return False
+	return True
+

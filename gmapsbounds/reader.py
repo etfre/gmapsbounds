@@ -33,10 +33,15 @@ def prune_extra_nodes(polygons):
             continue
         pruned = polygon.Polygon(poly.nodes[:2])
         for node in poly.nodes[2:]:
-            if (utils.get_slope(pruned.nodes[-2], pruned.nodes[-1]) == utils.get_slope(pruned.nodes[-2], node) or
-                utils.get_distance(pruned.nodes[-1], node)) <= 2:
-                pruned.nodes.pop()
-            pruned.nodes.append(node)
+            if utils.get_distance(pruned.nodes[-1], node) <= 1:
+                continue
+            end_node = None
+            if utils.same_line(pruned.nodes[-2], pruned.nodes[-1], node):
+                end_node = node
+            else:
+                if end_node is None:
+                    end_node = node
+                pruned.nodes.append(end_node)
         if len(pruned.nodes) > 2:
             pruned_polygons.append(pruned)
     return pruned_polygons
@@ -152,12 +157,6 @@ def get_closest_unvisited_node(current, nodes, rgb_im):
                 shortest_distance = distance
         i += 1
     return closest_node, shortest_distance
-
-def add_skipped_nodes(x, y, do_not_check):
-    do_not_check.add((x+1, y-1))
-    do_not_check.add((x+1, y))
-    do_not_check.add((x+1, y+1))
-    do_not_check.add((x, y+1))
 
 class Node:
     def __init__(self, x, y):
