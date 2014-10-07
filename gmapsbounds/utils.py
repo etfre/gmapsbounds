@@ -154,9 +154,9 @@ def same_line(start, end, test_node):
 	start and end nodes
 	'''
 	distance_ratio = get_distance(start, test_node) / get_distance(start, end)
-	xy_diffs = [end.x - start.x, end.y - start.y]
-	expected_xy = [start.x + distance_ratio * xy_diffs[0], start.y + distance_ratio * xy_diffs[1]]
-	if max(abs(expected_xy[0] - test_node.x), abs(expected_xy[1] - test_node.y)) >= 2:
+	xdiff, ydiff = end.x - start.x, end.y - start.y
+	expected_x, expected_y = start.x + distance_ratio * xdiff, start.y + distance_ratio * ydiff
+	if max(abs(expected_x - test_node.x), abs(expected_y - test_node.y)) >= 2:
 		return False
 	return True
 
