@@ -21,6 +21,4 @@ The program output can also go into a single KML file by passing a file name end
 <h2>To Do</h2>
 * Better pixel color detection around city names
 
-* Better handling of polygon overlap, include inner boundaries
-
-* It would be nice to eventually run this in a headless browser. PhantomJS and Google Maps don't seem to play nicely at the moment, so this might require some creativity.
+* It would be nice to eventually run this in a headless browser. Google Maps can't seem to figure out the appropriate level to auto-zoom in PhantomJS though, so this might require some creativity.

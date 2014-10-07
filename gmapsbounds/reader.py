@@ -95,8 +95,7 @@ def get_polygons(nodes, rgb_im):
             i = -1
             while distance > constants.MAX_NODE_DIFFERENCE:
                 if (current is poly.nodes[0] or i < -constants.MAX_NODE_BACKTRACK
-                    or (utils.get_distance(poly.nodes[0], current) < constants.MAX_NODE_DIFFERENCE and
-                    len(poly.nodes) >= len(nodes) / 2)):
+                    or (utils.get_distance(poly.nodes[0], current) < constants.MAX_NODE_DIFFERENCE)):
                     closest = None
                     break
                 current = poly.nodes[i]
